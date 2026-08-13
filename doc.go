@@ -29,4 +29,8 @@
 //
 //	exp, err := c.ExportServer(ctx, "Encl1, bay 5", oneview.ExportOptions{})
 //	fmt.Print(exp.Summary())
+//
+// Collect every server from several appliances / API versions (duplicates merged):
+//
+//	servers, err := oneview.CollectServers(ctx, []oneview.Config{cfgDashboard, cfgAppliance})
 package oneview

@@ -134,6 +134,9 @@ func TestExportServerFromSubresources(t *testing.T) {
 	if len(exp.Storage.Drives) != 1 || exp.Storage.Drives[0].MediaType != "SSD" {
 		t.Fatalf("drives %+v", exp.Storage)
 	}
+	if len(exp.Storage.Controllers) != 1 || len(exp.Storage.Controllers[0].Drives) != 1 {
+		t.Fatalf("controller disks %+v", exp.Storage.Controllers)
+	}
 	if len(exp.Storage.Volumes) != 1 || exp.Storage.Volumes[0].RAID != "1" {
 		t.Fatalf("volumes %+v", exp.Storage)
 	}
