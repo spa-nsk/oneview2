@@ -1,0 +1,12 @@
+*.exe
+*.test
+*.out
+*.dll
+bin/
+dist/
+server-export.json
+server-exports/
+out/
+.idea/
+.vscode/
+*.swp
