@@ -384,13 +384,13 @@ func (c *Client) ListInterconnectTypes(ctx context.Context, opts ListOptions) (*
 }
 
 // ListRacks is GET /rest/racks.
-func (c *Client) ListRacks(ctx context.Context, opts ListOptions) (*Collection[Resource], error) {
-	return list[Resource](ctx, c, URIRacks, opts)
+func (c *Client) ListRacks(ctx context.Context, opts ListOptions) (*Collection[Rack], error) {
+	return list[Rack](ctx, c, URIRacks, opts)
 }
 
 // GetRack is GET /rest/racks/{id}.
-func (c *Client) GetRack(ctx context.Context, id string) (*Resource, error) {
-	return get[Resource](ctx, c, URIRacks, id)
+func (c *Client) GetRack(ctx context.Context, id string) (*Rack, error) {
+	return get[Rack](ctx, c, URIRacks, id)
 }
 
 // ListEvents is GET /rest/events.

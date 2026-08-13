@@ -13,18 +13,22 @@ import (
 // Arrays are always non-nil: missing data from an older or thinner API is an
 // empty slice, not null. Local disks live on Controllers (not a flat list).
 type Server struct {
-	Identity     ServerIdentity      `json:"identity"`
-	Processors   []ProcessorInfo     `json:"processors"`
-	Memory       []MemoryModule      `json:"memory"`
-	Controllers  []StorageController `json:"controllers"`
-	Devices      []PCIDevice         `json:"devices"`
-	NetworkPorts []NetworkPortExport `json:"networkPorts"`
-	Firmware     []FirmwareComponent `json:"firmware"`
-	APIVersion   int                 `json:"apiVersion,omitempty"`
-	Product      string              `json:"product,omitempty"`
-	Endpoint     string              `json:"endpoint,omitempty"`
-	Sources      []ServerSource      `json:"sources"`
-	Warnings     []string            `json:"warnings"`
+	Identity      ServerIdentity      `json:"identity"`
+	Processors    []ProcessorInfo     `json:"processors"`
+	Memory        []MemoryModule      `json:"memory"`
+	Controllers   []StorageController `json:"controllers"`
+	Devices       []PCIDevice         `json:"devices"`
+	NetworkPorts  []NetworkPortExport `json:"networkPorts"`
+	Firmware      []FirmwareComponent `json:"firmware"`
+	Datacenter    DatacenterInfo      `json:"datacenter"`
+	Rack          RackInfo            `json:"rack"`
+	EnclosureInfo EnclosureInfo       `json:"enclosure"`
+	BayInfo       BayInfo             `json:"bay"`
+	APIVersion    int                 `json:"apiVersion,omitempty"`
+	Product       string              `json:"product,omitempty"`
+	Endpoint      string              `json:"endpoint,omitempty"`
+	Sources       []ServerSource      `json:"sources"`
+	Warnings      []string            `json:"warnings"`
 }
 
 // ServerSource records which OneView endpoint contributed a Server.
@@ -80,6 +84,7 @@ func collectFromConfig(ctx context.Context, cfg Config) ([]Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	cat := c.loadLocationCatalog(ctx)
 	src := ServerSource{
 		Endpoint:   c.BaseURL(),
 		APIVersion: c.APIVersion(),
@@ -92,6 +97,7 @@ func collectFromConfig(ctx context.Context, cfg Config) ([]Server, error) {
 			continue
 		}
 		s := serverFromExport(exp, src)
+		fillServerLocation(&s, exp, cat)
 		addOrMergeServer(&out, seen, s)
 	}
 	return out, nil
@@ -169,6 +175,10 @@ func mergeServer(dst *Server, src Server) {
 	dst.Devices = preferSlice(dst.Devices, src.Devices, devicesRicher)
 	dst.NetworkPorts = preferSlice(dst.NetworkPorts, src.NetworkPorts, portsRicher)
 	dst.Firmware = preferSlice(dst.Firmware, src.Firmware, firmwareRicher)
+	mergeDatacenterInfo(&dst.Datacenter, src.Datacenter)
+	mergeRackInfo(&dst.Rack, src.Rack)
+	mergeEnclosureInfo(&dst.EnclosureInfo, src.EnclosureInfo)
+	mergeBayInfo(&dst.BayInfo, src.BayInfo)
 	if dst.APIVersion == 0 {
 		dst.APIVersion = src.APIVersion
 	}

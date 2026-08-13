@@ -188,33 +188,49 @@ type GroupCreate struct {
 // Enclosure is GET /rest/enclosures/{id}.
 type Enclosure struct {
 	Resource
-	ActiveOAPreferredIP  string           `json:"activeOaPreferredIP,omitempty"`
-	AssetTag             string           `json:"assetTag,omitempty"`
-	DeviceBayCount       FlexInt          `json:"deviceBayCount,omitempty"`
-	DeviceBays           []map[string]any `json:"deviceBays,omitempty"`
-	EnclosureGroupURI    string           `json:"enclosureGroupUri,omitempty"`
-	EnclosureType        string           `json:"enclosureType,omitempty"`
-	FanBayCount          FlexInt          `json:"fanBayCount,omitempty"`
-	FanBays              []map[string]any `json:"fanBays,omitempty"`
-	FwBaselineName       string           `json:"fwBaselineName,omitempty"`
-	FwBaselineURI        string           `json:"fwBaselineUri,omitempty"`
-	InterconnectBayCount FlexInt          `json:"interconnectBayCount,omitempty"`
-	InterconnectBays     []map[string]any `json:"interconnectBays,omitempty"`
-	IsFwManaged          FlexBool         `json:"isFwManaged,omitempty"`
-	LicensingIntent      string           `json:"licensingIntent,omitempty"`
-	LogicalEnclosureURI  string           `json:"logicalEnclosureUri,omitempty"`
-	ManagerBays          []map[string]any `json:"managerBays,omitempty"`
-	OABays               []map[string]any `json:"oaBays,omitempty"`
-	PartNumber           string           `json:"partNumber,omitempty"`
-	PowerSupplyBayCount  FlexInt          `json:"powerSupplyBayCount,omitempty"`
-	PowerSupplyBays      []map[string]any `json:"powerSupplyBays,omitempty"`
-	RackName             string           `json:"rackName,omitempty"`
-	RefreshState         string           `json:"refreshState,omitempty"`
-	SerialNumber         string           `json:"serialNumber,omitempty"`
-	StandbyOAPreferredIP string           `json:"standbyOaPreferredIP,omitempty"`
-	UIDState             string           `json:"uidState,omitempty"`
-	UUID                 string           `json:"uuid,omitempty"`
-	Version              string           `json:"version,omitempty"`
+	ActiveOAPreferredIP  string               `json:"activeOaPreferredIP,omitempty"`
+	AssetTag             string               `json:"assetTag,omitempty"`
+	DeviceBayCount       FlexInt              `json:"deviceBayCount,omitempty"`
+	DeviceBays           []EnclosureDeviceBay `json:"deviceBays,omitempty"`
+	EnclosureGroupURI    string               `json:"enclosureGroupUri,omitempty"`
+	EnclosureModel       string               `json:"enclosureModel,omitempty"`
+	EnclosureType        string               `json:"enclosureType,omitempty"`
+	EnclosureTypeURI     string               `json:"enclosureTypeUri,omitempty"`
+	FanBayCount          FlexInt              `json:"fanBayCount,omitempty"`
+	FanBays              []map[string]any     `json:"fanBays,omitempty"`
+	FwBaselineName       string               `json:"fwBaselineName,omitempty"`
+	FwBaselineURI        string               `json:"fwBaselineUri,omitempty"`
+	InterconnectBayCount FlexInt              `json:"interconnectBayCount,omitempty"`
+	InterconnectBays     []map[string]any     `json:"interconnectBays,omitempty"`
+	IsFwManaged          FlexBool             `json:"isFwManaged,omitempty"`
+	LicensingIntent      string               `json:"licensingIntent,omitempty"`
+	LogicalEnclosureURI  string               `json:"logicalEnclosureUri,omitempty"`
+	ManagerBays          []map[string]any     `json:"managerBays,omitempty"`
+	OABays               []map[string]any     `json:"oaBays,omitempty"`
+	PartNumber           string               `json:"partNumber,omitempty"`
+	PowerSupplyBayCount  FlexInt              `json:"powerSupplyBayCount,omitempty"`
+	PowerSupplyBays      []map[string]any     `json:"powerSupplyBays,omitempty"`
+	RackName             string               `json:"rackName,omitempty"`
+	RefreshState         string               `json:"refreshState,omitempty"`
+	SerialNumber         string               `json:"serialNumber,omitempty"`
+	StandbyOAPreferredIP string               `json:"standbyOaPreferredIP,omitempty"`
+	UIDState             string               `json:"uidState,omitempty"`
+	UUID                 string               `json:"uuid,omitempty"`
+	Version              string               `json:"version,omitempty"`
+}
+
+// EnclosureDeviceBay is one device bay on GET /rest/enclosures/{id}.
+type EnclosureDeviceBay struct {
+	Type           string   `json:"type,omitempty"`
+	BayNumber      FlexInt  `json:"bayNumber,omitempty"`
+	BayPowerState  string   `json:"bayPowerState,omitempty"`
+	DevicePresence string   `json:"devicePresence,omitempty"`
+	DeviceURI      string   `json:"deviceUri,omitempty"`
+	DeviceBayType  string   `json:"deviceBayType,omitempty"`
+	Covered        FlexBool `json:"covered,omitempty"`
+	Model          string   `json:"model,omitempty"`
+	ProfileURI     string   `json:"profileUri,omitempty"`
+	ChangeState    string   `json:"changeState,omitempty"`
 }
 
 // ServerHardware is GET /rest/server-hardware/{id}.
@@ -463,16 +479,61 @@ type DriveEnclosure struct {
 }
 
 // Datacenter is GET /rest/datacenters/{id}.
+// Appliance APIs use contents[]; Global Dashboard (API 300) uses rackInventory[].
 type Datacenter struct {
 	Resource
-	Contents                []map[string]any `json:"contents,omitempty"`
-	CoolingCapacity         FlexInt          `json:"coolingCapacity,omitempty"`
-	CostPerWatt             float64          `json:"costPerWatt,omitempty"`
-	Currency                string           `json:"currency,omitempty"`
-	DefaultPowerLineVoltage FlexInt          `json:"defaultPowerLineVoltage,omitempty"`
-	DeratingType            string           `json:"deratingType,omitempty"`
-	Height                  FlexInt          `json:"height,omitempty"`
-	Width                   FlexInt          `json:"width,omitempty"`
+	Contents                []DatacenterContent `json:"contents,omitempty"`
+	RackInventory           []RackInventoryItem `json:"rackInventory,omitempty"`
+	CoolingCapacity         FlexInt             `json:"coolingCapacity,omitempty"`
+	CostPerWatt             float64             `json:"costPerWatt,omitempty"`
+	Currency                string              `json:"currency,omitempty"`
+	DefaultPowerLineVoltage FlexInt             `json:"defaultPowerLineVoltage,omitempty"`
+	DeratingType            string              `json:"deratingType,omitempty"`
+	Height                  FlexInt             `json:"height,omitempty"`
+	Width                   FlexInt             `json:"width,omitempty"`
+}
+
+// DatacenterContent is one rack placement on an appliance datacenter floor plan.
+type DatacenterContent struct {
+	ResourceURI string  `json:"resourceUri,omitempty"`
+	X           FlexInt `json:"x,omitempty"`
+	Y           FlexInt `json:"y,omitempty"`
+	Rotation    FlexInt `json:"rotation,omitempty"`
+}
+
+// RackInventoryItem is a Global Dashboard datacenter rack summary.
+type RackInventoryItem struct {
+	Name              string  `json:"name,omitempty"`
+	OriginalURI       string  `json:"originalUri,omitempty"`
+	ApplianceLocation string  `json:"applianceLocation,omitempty"`
+	ApplianceName     string  `json:"applianceName,omitempty"`
+	ApplianceURI      string  `json:"appluri,omitempty"`
+	OriginalStatus    string  `json:"originalStatus,omitempty"`
+	Temperature       float64 `json:"temperature,omitempty"`
+	PowerAllocation   float64 `json:"powerAllocation,omitempty"`
+}
+
+// Rack is GET /rest/racks/{id} (appliance 3800–8800).
+type Rack struct {
+	Resource
+	Depth        FlexInt     `json:"depth,omitempty"`
+	Height       FlexInt     `json:"height,omitempty"`
+	Width        FlexInt     `json:"width,omitempty"`
+	Model        string      `json:"model,omitempty"`
+	PartNumber   string      `json:"partNumber,omitempty"`
+	SerialNumber string      `json:"serialNumber,omitempty"`
+	ThermalLimit FlexInt     `json:"thermalLimit,omitempty"`
+	UHeight      FlexInt     `json:"uHeight,omitempty"`
+	UUID         string      `json:"uuid,omitempty"`
+	RackMounts   []RackMount `json:"rackMounts,omitempty"`
+}
+
+// RackMount is one enclosure or rack-server placement inside a rack.
+type RackMount struct {
+	MountURI string  `json:"mountUri,omitempty"`
+	TopUSlot FlexInt `json:"topUSlot,omitempty"`
+	UHeight  FlexInt `json:"uHeight,omitempty"`
+	Location string  `json:"location,omitempty"`
 }
 
 // ConvergedSystem is GET /rest/converged-systems/{id}.

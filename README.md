@@ -96,7 +96,8 @@ all, err := c.ExportServers(ctx, oneview.ListOptions{Count: -1}, oneview.ExportO
 ```go
 servers, err := oneview.CollectServers(ctx, []oneview.Config{cfgGD, cfgOV})
 for _, s := range servers {
-    log.Println(s.Identity.Name, len(s.Processors), len(s.Memory), len(s.Controllers))
+    log.Println(s.Identity.Name, s.Datacenter.Name, s.Rack.Name, s.EnclosureInfo.Name, s.BayInfo.BayNumber)
+    log.Println(len(s.Processors), len(s.Memory), len(s.Controllers))
     for _, ctrl := range s.Controllers {
         log.Println(ctrl.Model, len(ctrl.Drives), len(ctrl.Volumes))
     }
