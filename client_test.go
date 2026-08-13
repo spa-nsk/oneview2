@@ -25,6 +25,20 @@ func TestFlexIntAndString(t *testing.T) {
 	if err := json.Unmarshal([]byte(`"abc"`), &s); err != nil || s.String() != "abc" {
 		t.Fatalf("string flexstring: %v %q", err, s)
 	}
+	var b FlexBool
+	if err := json.Unmarshal([]byte(`true`), &b); err != nil || !b.Bool() {
+		t.Fatalf("bool flexbool: %v %v", err, b)
+	}
+	if err := json.Unmarshal([]byte(`"false"`), &b); err != nil || b.Bool() {
+		t.Fatalf("string flexbool: %v %v", err, b)
+	}
+	var hw ServerHardware
+	if err := json.Unmarshal([]byte(`{"name":"bay1","powerLock":true,"hostOsType":"12"}`), &hw); err != nil {
+		t.Fatal(err)
+	}
+	if !hw.PowerLock.Bool() || hw.HostOsType.Int() != 12 {
+		t.Fatalf("hw %+v", hw)
+	}
 }
 
 func TestListOptions(t *testing.T) {

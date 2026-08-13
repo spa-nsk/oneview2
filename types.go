@@ -89,6 +89,47 @@ func (n FlexInt) MarshalJSON() ([]byte, error) {
 	return json.Marshal(int(n))
 }
 
+// FlexBool unmarshals JSON booleans or "true"/"false" strings.
+type FlexBool bool
+
+func (b FlexBool) Bool() bool { return bool(b) }
+
+func (b *FlexBool) UnmarshalJSON(raw []byte) error {
+	raw = bytesTrim(raw)
+	if len(raw) == 0 || string(raw) == "null" {
+		*b = false
+		return nil
+	}
+	if raw[0] == '"' {
+		var s string
+		if err := json.Unmarshal(raw, &s); err != nil {
+			return err
+		}
+		switch strings.ToLower(strings.TrimSpace(s)) {
+		case "", "false", "0", "no", "off":
+			*b = false
+		default:
+			*b = true
+		}
+		return nil
+	}
+	var v bool
+	if err := json.Unmarshal(raw, &v); err == nil {
+		*b = FlexBool(v)
+		return nil
+	}
+	var n FlexInt
+	if err := n.UnmarshalJSON(raw); err != nil {
+		return err
+	}
+	*b = n.Int() != 0
+	return nil
+}
+
+func (b FlexBool) MarshalJSON() ([]byte, error) {
+	return json.Marshal(bool(b))
+}
+
 // VersionInfo is GET /rest/version.
 type VersionInfo struct {
 	MinimumVersion FlexInt `json:"minimumVersion"`

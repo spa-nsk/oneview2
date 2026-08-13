@@ -222,7 +222,7 @@ type ServerHardware struct {
 	Resource
 	AssetTag                   string                         `json:"assetTag,omitempty"`
 	FormFactor                 string                         `json:"formFactor,omitempty"`
-	HostOsType                 int                            `json:"hostOsType,omitempty"`
+	HostOsType                 FlexInt                        `json:"hostOsType,omitempty"`
 	LicensingIntent            string                         `json:"licensingIntent,omitempty"`
 	LocationURI                string                         `json:"locationUri,omitempty"`
 	MaintenanceMode            bool                           `json:"maintenanceMode,omitempty"`
@@ -242,7 +242,7 @@ type ServerHardware struct {
 	PortMap                    PortMap                        `json:"portMap,omitempty"`
 	SubResources               map[string]HardwareSubResource `json:"subResources,omitempty"`
 	Position                   int                            `json:"position,omitempty"`
-	PowerLock                  string                         `json:"powerLock,omitempty"`
+	PowerLock                  FlexBool                       `json:"powerLock,omitempty"`
 	PowerState                 string                         `json:"powerState,omitempty"`
 	ProcessorCoreCount         int                            `json:"processorCoreCount,omitempty"`
 	ProcessorCount             int                            `json:"processorCount,omitempty"`
