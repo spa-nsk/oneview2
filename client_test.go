@@ -69,6 +69,35 @@ func TestIsSupportedAPI(t *testing.T) {
 	}
 }
 
+func TestClientLoginSendsAckAndRetriesDomain(t *testing.T) {
+	var bodies []string
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == "/rest/version":
+			io.WriteString(w, `{"minimumVersion":3800,"currentVersion":3800}`)
+		case r.URL.Path == "/rest/login-sessions" && r.Method == http.MethodPost:
+			raw, _ := io.ReadAll(r.Body)
+			bodies = append(bodies, string(raw))
+			if strings.Contains(string(raw), `"loginMsgAck":true`) && strings.Contains(string(raw), `"authLoginDomain":"Local"`) {
+				w.Write([]byte(`{"sessionID":"ok"}`))
+				return
+			}
+			w.WriteHeader(400)
+			io.WriteString(w, `{"errorCode":"AUTHN_LOGIN_INVALID_MESSAGE_ACK","message":"Login message must be acknowledged.","details":"Set loginMsgAck to true."}`)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer srv.Close()
+	c, _ := New(Config{Endpoint: srv.URL, Username: "admin", Password: "p", Domain: "LOCAL", InsecureTLS: true, HTTPClient: srv.Client()})
+	if err := c.Login(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if c.AuthToken() != "ok" {
+		t.Fatalf("token %q bodies=%v", c.AuthToken(), bodies)
+	}
+}
+
 func TestClientLoginAppliance(t *testing.T) {
 	var gotAuth, gotAPI string
 	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

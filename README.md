@@ -31,7 +31,7 @@ func main() {
         Endpoint:    "https://oneview.example.com",
         Username:    "Administrator",
         Password:    "secret",
-        Domain:      "LOCAL",
+        Domain:      "Local",
         APIVersion:  0,    // 0 = currentVersion с appliance
         InsecureTLS: true, // только для лаборатории
     })
@@ -64,7 +64,7 @@ func main() {
 ONEVIEW_OV_ENDPOINT=https://oneview.example.com
 ONEVIEW_OV_USER=Administrator
 ONEVIEW_OV_PASSWORD=secret
-ONEVIEW_OV_DOMAIN=LOCAL
+ONEVIEW_OV_DOMAIN=Local
 ONEVIEW_APIVERSION=3800
 ONEVIEW_SSLVERIFY=false
 ```

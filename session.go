@@ -19,6 +19,7 @@ type Credentials struct {
 	UserName        string `json:"userName"`
 	Password        string `json:"password"`
 	AuthLoginDomain string `json:"authLoginDomain,omitempty"`
+	LoginMsgAck     *bool  `json:"loginMsgAck,omitempty"`
 }
 
 // SessionUser is the Global Dashboard login user block.
@@ -75,12 +76,11 @@ func (c *Client) GetVersion(ctx context.Context) (*VersionInfo, error) {
 	if requested == 0 {
 		requested = current
 	}
-	if current > 0 && (requested < min || requested > current) {
-		return &v, fmt.Errorf("oneview: requested API %d is outside appliance range %d–%d", requested, min, current)
+	if current > 0 && requested > current {
+		requested = current
 	}
-	if !isSupportedAPI(requested) {
-		return &v, fmt.Errorf("oneview: API %d is outside supported ranges %d–%d (Global Dashboard) and %d–%d (appliance)",
-			requested, MinGlobalDashboardAPI, GlobalDashboardAPI, MinApplianceAPI, MaxApplianceAPI)
+	if current > 0 && requested < min {
+		return &v, fmt.Errorf("oneview: requested API %d is below appliance minimum %d", requested, min)
 	}
 	c.setVersion(min, current, requested)
 	return &v, nil
@@ -99,23 +99,44 @@ func (c *Client) Login(ctx context.Context) error {
 			return err
 		}
 	}
-	body := Credentials{
-		UserName:        c.username,
-		Password:        c.password,
-		AuthLoginDomain: normalizeDomain(c.domain),
-	}
+
+	paths := []string{uriLoginSessions, uriLoginSessions + "/"}
+	ackTrue := true
+	acks := []*bool{&ackTrue, nil}
+	var last error
 	var sess Session
-	if _, err := c.PostJSON(ctx, uriLoginSessions, body, &sess); err != nil {
-		if _, err2 := c.PostJSON(ctx, uriLoginSessions+"/", body, &sess); err2 != nil {
-			return err
+	for _, domain := range loginDomainCandidates(c.domain) {
+		for _, ack := range acks {
+			body := Credentials{
+				UserName:        c.username,
+				Password:        c.password,
+				AuthLoginDomain: domain,
+				LoginMsgAck:     ack,
+			}
+			for _, path := range paths {
+				sess = Session{}
+				if _, err := c.PostJSON(ctx, path, body, &sess); err != nil {
+					last = err
+					if !isRetryableLogin(err) {
+						return err
+					}
+					continue
+				}
+				if tok := sess.AuthHeader(); tok != "" {
+					c.SetAuthToken(tok)
+					if domain != "" {
+						c.domain = domain
+					}
+					return nil
+				}
+				last = fmt.Errorf("oneview: login succeeded but session token is empty")
+			}
 		}
 	}
-	token := sess.AuthHeader()
-	if token == "" {
-		return fmt.Errorf("oneview: login succeeded but session token is empty")
+	if last == nil {
+		last = fmt.Errorf("oneview: login failed")
 	}
-	c.SetAuthToken(token)
-	return nil
+	return last
 }
 
 // Logout deletes the current session. It is safe to call more than once.
@@ -135,12 +156,24 @@ func (c *Client) Logout(ctx context.Context) error {
 	return nil
 }
 
-func normalizeDomain(d string) string {
-	if d == "" {
-		return "LOCAL"
+func loginDomainCandidates(d string) []string {
+	d = strings.TrimSpace(d)
+	if d == "" || strings.EqualFold(d, "local") {
+		// Appliance/Postman use "Local"; some docs and env vars use "LOCAL";
+		// Global Dashboard swagger uses "local".
+		return []string{"Local", "LOCAL", "local", ""}
 	}
-	if strings.EqualFold(d, "local") {
-		return "LOCAL"
+	return []string{d}
+}
+
+func isRetryableLogin(err error) bool {
+	var ae *APIError
+	if !asAPIError(err, &ae) {
+		return false
 	}
-	return d
+	switch ae.StatusCode {
+	case http.StatusBadRequest, http.StatusNotFound:
+		return true
+	}
+	return false
 }

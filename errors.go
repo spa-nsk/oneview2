@@ -38,6 +38,9 @@ func (e *APIError) Error() string {
 	if e.Details != "" && e.Details != e.Message {
 		fmt.Fprintf(&b, " (%s)", e.Details)
 	}
+	if len(e.RecommendedActions) > 0 {
+		fmt.Fprintf(&b, "; %s", strings.Join(e.RecommendedActions, " "))
+	}
 	return b.String()
 }
 
@@ -47,12 +50,25 @@ func parseAPIError(method, uri string, status int, body []byte) error {
 		URI:        uri,
 		Method:     method,
 		Body:       body,
-		Message:    http.StatusText(status),
 	}
 	if len(body) > 0 {
 		_ = json.Unmarshal(body, ae)
-		if ae.Message == "" || ae.Message == http.StatusText(status) {
-			ae.Message = strings.TrimSpace(string(body))
+	}
+	if ae.Message == "" || ae.Message == http.StatusText(status) {
+		if ae.Details != "" {
+			ae.Message = ae.Details
+		} else if len(body) > 0 {
+			msg := strings.TrimSpace(string(body))
+			if len(msg) > 400 {
+				msg = msg[:400] + "…"
+			}
+			if strings.Contains(strings.ToLower(msg), "<html") {
+				ae.Message = http.StatusText(status)
+			} else {
+				ae.Message = msg
+			}
+		} else {
+			ae.Message = http.StatusText(status)
 		}
 	}
 	return ae

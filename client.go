@@ -20,7 +20,8 @@ type Config struct {
 	Endpoint string
 	Username string
 	Password string
-	// Domain is the login domain (LOCAL for local users, or an AD/LDAP directory name).
+	// Domain is the login domain. Empty tries Local / LOCAL / local.
+	// Use "Local" for appliance accounts; directory name for AD/LDAP.
 	Domain string
 	// APIVersion is X-API-Version. Zero means use the appliance currentVersion.
 	APIVersion int
@@ -82,6 +83,11 @@ func New(cfg Config) (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("oneview: invalid Endpoint: %w", err)
 	}
+	u.Path = strings.TrimSuffix(u.Path, "/")
+	u.Path = strings.TrimSuffix(u.Path, "/rest")
+	u.Path = strings.TrimSuffix(u.Path, "/ui")
+	u.RawQuery = ""
+	u.Fragment = ""
 	timeout := cfg.Timeout
 	if timeout == 0 {
 		timeout = 60 * time.Second
@@ -89,18 +95,16 @@ func New(cfg Config) (*Client, error) {
 	httpClient := cfg.HTTPClient
 	if httpClient == nil {
 		tr := http.DefaultTransport.(*http.Transport).Clone()
+		tlsCfg := &tls.Config{MinVersion: tls.VersionTLS12}
 		if cfg.InsecureTLS {
-			tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true} //nolint:gosec
+			tlsCfg.InsecureSkipVerify = true //nolint:gosec
 		}
+		tr.TLSClientConfig = tlsCfg
 		httpClient = &http.Client{Timeout: timeout, Transport: tr}
 	}
 	ua := cfg.UserAgent
 	if ua == "" {
 		ua = defaultUserAgent
-	}
-	domain := cfg.Domain
-	if domain == "" {
-		domain = "LOCAL"
 	}
 	ifMatch := cfg.IfMatch
 	if ifMatch == "" {
@@ -112,7 +116,7 @@ func New(cfg Config) (*Client, error) {
 		apiVersion: cfg.APIVersion,
 		username:   cfg.Username,
 		password:   cfg.Password,
-		domain:     domain,
+		domain:     cfg.Domain,
 		ifMatch:    ifMatch,
 		userAgent:  ua,
 	}, nil
