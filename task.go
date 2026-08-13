@@ -17,29 +17,29 @@ type Task struct {
 	Resource
 	AssociatedResource      AssociatedResource `json:"associatedResource,omitempty"`
 	AssociatedTaskURI       string             `json:"associatedTaskUri,omitempty"`
-	CompletedSteps          int                `json:"completedSteps,omitempty"`
-	ComputedPercentComplete int                `json:"computedPercentComplete,omitempty"`
-	ExpectedDuration        int                `json:"expectedDuration,omitempty"`
-	Hidden                  bool               `json:"hidden,omitempty"`
+	CompletedSteps          FlexInt            `json:"completedSteps,omitempty"`
+	ComputedPercentComplete FlexInt            `json:"computedPercentComplete,omitempty"`
+	ExpectedDuration        FlexInt            `json:"expectedDuration,omitempty"`
+	Hidden                  FlexBool           `json:"hidden,omitempty"`
 	Owner                   string             `json:"owner,omitempty"`
 	ParentTaskURI           string             `json:"parentTaskUri,omitempty"`
-	PercentComplete         int                `json:"percentComplete,omitempty"`
+	PercentComplete         FlexInt            `json:"percentComplete,omitempty"`
 	ProgressUpdates         []ProgressUpdate   `json:"progressUpdates,omitempty"`
 	TaskErrors              []APIError         `json:"taskErrors,omitempty"`
 	TaskOutput              []string           `json:"taskOutput,omitempty"`
 	TaskState               string             `json:"taskState,omitempty"`
 	TaskStatus              string             `json:"taskStatus,omitempty"`
 	TaskType                string             `json:"taskType,omitempty"`
-	TotalSteps              int                `json:"totalSteps,omitempty"`
-	UserInitiated           bool               `json:"userInitiated,omitempty"`
+	TotalSteps              FlexInt            `json:"totalSteps,omitempty"`
+	UserInitiated           FlexBool           `json:"userInitiated,omitempty"`
 	Data                    map[string]any     `json:"data,omitempty"`
 }
 
 // ProgressUpdate is a task log line.
 type ProgressUpdate struct {
-	ID           int    `json:"id,omitempty"`
-	StatusUpdate string `json:"statusUpdate,omitempty"`
-	Timestamp    string `json:"timestamp,omitempty"`
+	ID           FlexInt `json:"id,omitempty"`
+	StatusUpdate string  `json:"statusUpdate,omitempty"`
+	Timestamp    string  `json:"timestamp,omitempty"`
 }
 
 func (t *Task) terminal() bool {

@@ -36,8 +36,14 @@ func TestFlexIntAndString(t *testing.T) {
 	if err := json.Unmarshal([]byte(`{"name":"bay1","powerLock":true,"hostOsType":"12"}`), &hw); err != nil {
 		t.Fatal(err)
 	}
-	if !hw.PowerLock.Bool() || hw.HostOsType.Int() != 12 {
+	if !hw.PowerLock.Bool() || hw.HostOsType.String() != "12" {
 		t.Fatalf("hw %+v", hw)
+	}
+	if err := json.Unmarshal([]byte(`{"hostOsType":"Windows","powerLock":"true","position":null,"memoryMb":"65536"}`), &hw); err != nil {
+		t.Fatal(err)
+	}
+	if hw.HostOsType.String() != "Windows" || !hw.PowerLock.Bool() || hw.MemoryMb.Int() != 65536 {
+		t.Fatalf("mixed types %+v", hw)
 	}
 }
 

@@ -91,6 +91,18 @@ _ = oneview.SaveServerExportJSON("server.json", exp)
 all, err := c.ExportServers(ctx, oneview.ListOptions{Count: -1}, oneview.ExportOptions{})
 ```
 
+Несколько appliance / Global Dashboard сразу — одна функция, дедупликация по UUID и серийнику. У каждого сервера массивы процессоров, DIMM и локальных контроллеров с вложенными дисками. Если API версии не отдал секцию, массив пустой, не `null`.
+
+```go
+servers, err := oneview.CollectServers(ctx, []oneview.Config{cfgGD, cfgOV})
+for _, s := range servers {
+    log.Println(s.Identity.Name, len(s.Processors), len(s.Memory), len(s.Controllers))
+    for _, ctrl := range s.Controllers {
+        log.Println(ctrl.Model, len(ctrl.Drives), len(ctrl.Volumes))
+    }
+}
+```
+
 Идентификатор: имя, `serverName`, серийный номер, UUID или URI `/rest/server-hardware/...`.
 
 Источники: `GET /rest/server-hardware/{id}` (`subResources`: Memory, LocalStorage, Devices), плюс `/firmware`, `/localStorageV2`, `/bios`, `/processors`, `/memory`.
@@ -124,6 +136,8 @@ go run ./examples/export_servers ./out
 3. дальше все вызовы с `X-API-Version: <requested>`
 
 Если `APIVersion` не задан, берётся `currentVersion` appliance.
+
+JSON от Global Dashboard (API 300) и appliance (3800–8800) расходится по типам: `eTag` — строка или число, `powerLock` — bool или строка, `hostOsType` — int / `null` / имя ОС, `position` и счётчики CPU/RAM — int или `null` на rack-серверах. Клиент приводит это к `FlexString` / `FlexInt` / `FlexBool` и через `DecodeJSON` принимает оба варианта.
 
 ## Что покрыто
 

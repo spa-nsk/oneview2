@@ -80,7 +80,7 @@ type ProcessorInventory struct {
 	TotalCores  int             `json:"totalCores,omitempty"`
 	SpeedMHz    int             `json:"speedMHz,omitempty"`
 	Model       string          `json:"model,omitempty"`
-	Sockets     []ProcessorInfo `json:"sockets,omitempty"`
+	Sockets     []ProcessorInfo `json:"sockets"`
 }
 
 // ProcessorInfo is one CPU socket (Redfish/iLO inventory when present).
@@ -100,8 +100,8 @@ type ProcessorInfo struct {
 // MemoryInventory is DIMM-level and per-board memory.
 type MemoryInventory struct {
 	TotalMiB int            `json:"totalMiB,omitempty"`
-	Modules  []MemoryModule `json:"modules,omitempty"`
-	Boards   []MemoryBoard  `json:"boards,omitempty"`
+	Modules  []MemoryModule `json:"modules"`
+	Boards   []MemoryBoard  `json:"boards"`
 }
 
 // MemoryModule is one DIMM from subResources.Memory.
@@ -139,24 +139,27 @@ type MemoryBoard struct {
 
 // StorageInventory is RAID controllers, logical volumes and physical disks.
 type StorageInventory struct {
-	Controllers []StorageController `json:"controllers,omitempty"`
-	Drives      []PhysicalDrive     `json:"drives,omitempty"`
-	Volumes     []LogicalDrive      `json:"volumes,omitempty"`
+	Controllers []StorageController `json:"controllers"`
+	Drives      []PhysicalDrive     `json:"drives"`
+	Volumes     []LogicalDrive      `json:"volumes"`
 	Source      string              `json:"source,omitempty"` // localStorage | localStorageV2 | subResources
 }
 
-// StorageController is a Smart Array / HBA from LocalStorage inventory.
+// StorageController is a Smart Array / HBA. Physical and logical disks
+// belonging to this adapter are nested in Drives and Volumes.
 type StorageController struct {
-	Name                 string `json:"name,omitempty"`
-	Model                string `json:"model,omitempty"`
-	SerialNumber         string `json:"serialNumber,omitempty"`
-	AdapterType          string `json:"adapterType,omitempty"`
-	CurrentOperatingMode string `json:"currentOperatingMode,omitempty"`
-	Location             string `json:"location,omitempty"`
-	FirmwareVersion      string `json:"firmwareVersion,omitempty"`
-	CacheMemorySizeMiB   int    `json:"cacheMemorySizeMiB,omitempty"`
-	Health               string `json:"health,omitempty"`
-	State                string `json:"state,omitempty"`
+	Name                 string          `json:"name,omitempty"`
+	Model                string          `json:"model,omitempty"`
+	SerialNumber         string          `json:"serialNumber,omitempty"`
+	AdapterType          string          `json:"adapterType,omitempty"`
+	CurrentOperatingMode string          `json:"currentOperatingMode,omitempty"`
+	Location             string          `json:"location,omitempty"`
+	FirmwareVersion      string          `json:"firmwareVersion,omitempty"`
+	CacheMemorySizeMiB   int             `json:"cacheMemorySizeMiB,omitempty"`
+	Health               string          `json:"health,omitempty"`
+	State                string          `json:"state,omitempty"`
+	Drives               []PhysicalDrive `json:"drives"`
+	Volumes              []LogicalDrive  `json:"volumes"`
 }
 
 // PhysicalDrive is a HDD/SSD/NVMe behind a controller.

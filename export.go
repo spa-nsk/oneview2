@@ -103,14 +103,21 @@ func (c *Client) exportHardware(ctx context.Context, listed *ServerHardware, opt
 		}
 	}
 	exp := &ServerExport{
-		CollectedAt: time.Now().UTC(),
-		APIVersion:  c.APIVersion(),
-		Product:     c.Product().String(),
-		Hardware:    hw,
-		Identity:    identityFrom(hw),
+		CollectedAt:  time.Now().UTC(),
+		APIVersion:   c.APIVersion(),
+		Product:      c.Product().String(),
+		Hardware:     hw,
+		Identity:     identityFrom(hw),
+		Processors:   ProcessorInventory{Sockets: []ProcessorInfo{}},
+		Memory:       MemoryInventory{Modules: []MemoryModule{}, Boards: []MemoryBoard{}},
+		Storage:      StorageInventory{Controllers: []StorageController{}, Drives: []PhysicalDrive{}, Volumes: []LogicalDrive{}},
+		Devices:      []PCIDevice{},
+		NetworkPorts: []NetworkPortExport{},
+		Firmware:     []FirmwareComponent{},
+		Warnings:     []string{},
 	}
 	exp.Processors = processorsFrom(hw, nil)
-	exp.Memory.TotalMiB = hw.MemoryMb
+	exp.Memory.TotalMiB = hw.MemoryMb.Int()
 	exp.NetworkPorts = networkPortsFrom(hw.PortMap)
 
 	if !opts.SkipSubresources {
@@ -329,7 +336,7 @@ func identityFrom(hw *ServerHardware) ServerIdentity {
 		MpFirmwareVersion:      hw.MpFirmwareVersion,
 		MpIPAddress:            hw.MpIpAddress,
 		MpHostName:             host,
-		Position:               hw.Position,
+		Position:               hw.Position.Int(),
 		LocationURI:            hw.LocationURI,
 		ServerProfileURI:       hw.ServerProfileURI,
 		ServerHardwareTypeURI:  hw.ServerHardwareTypeURI,
@@ -343,32 +350,15 @@ func first(vals ...string) string { return nonEmpty(vals...) }
 
 func processorsFrom(hw *ServerHardware, socks []rawProcessor) ProcessorInventory {
 	inv := ProcessorInventory{
-		Count:       hw.ProcessorCount,
-		CoresPerCPU: hw.ProcessorCoreCount,
-		SpeedMHz:    hw.ProcessorSpeedMhz,
+		Count:       hw.ProcessorCount.Int(),
+		CoresPerCPU: hw.ProcessorCoreCount.Int(),
+		SpeedMHz:    hw.ProcessorSpeedMhz.Int(),
 		Model:       hw.ProcessorType,
 	}
 	if inv.Count > 0 && inv.CoresPerCPU > 0 {
 		inv.TotalCores = inv.Count * inv.CoresPerCPU
 	}
-	for _, s := range socks {
-		p := ProcessorInfo{
-			ID:                s.ID,
-			Socket:            s.Socket,
-			Model:             s.Model,
-			Manufacturer:      s.Manufacturer,
-			TotalCores:        s.TotalCores,
-			TotalThreads:      s.TotalThreads,
-			MaxSpeedMHz:       s.MaxSpeedMHz,
-			OperatingSpeedMHz: s.OperatingSpeedMHz,
-			Health:            s.Status.Health,
-			State:             s.Status.State,
-		}
-		if p.Model == "" {
-			p.Model = hw.ProcessorType
-		}
-		inv.Sockets = append(inv.Sockets, p)
-	}
+	inv.Sockets = processorList(hw, socks)
 	if len(inv.Sockets) > 0 {
 		inv.Count = len(inv.Sockets)
 		var cores int
@@ -383,6 +373,48 @@ func processorsFrom(hw *ServerHardware, socks []rawProcessor) ProcessorInventory
 		}
 	}
 	return inv
+}
+
+func processorList(hw *ServerHardware, socks []rawProcessor) []ProcessorInfo {
+	out := make([]ProcessorInfo, 0, len(socks))
+	for _, s := range socks {
+		p := ProcessorInfo{
+			ID:                s.ID,
+			Socket:            s.Socket,
+			Model:             s.Model,
+			Manufacturer:      s.Manufacturer,
+			TotalCores:        s.TotalCores,
+			TotalThreads:      s.TotalThreads,
+			MaxSpeedMHz:       s.MaxSpeedMHz,
+			OperatingSpeedMHz: s.OperatingSpeedMHz,
+			Health:            s.Status.Health,
+			State:             s.Status.State,
+		}
+		if p.Model == "" && hw != nil {
+			p.Model = hw.ProcessorType
+		}
+		out = append(out, p)
+	}
+	if len(out) > 0 {
+		return out
+	}
+	if hw == nil {
+		return []ProcessorInfo{}
+	}
+	n := hw.ProcessorCount.Int()
+	if n <= 0 {
+		return []ProcessorInfo{}
+	}
+	for i := 0; i < n; i++ {
+		out = append(out, ProcessorInfo{
+			Socket:            fmt.Sprintf("%d", i+1),
+			Model:             hw.ProcessorType,
+			TotalCores:        hw.ProcessorCoreCount.Int(),
+			MaxSpeedMHz:       hw.ProcessorSpeedMhz.Int(),
+			OperatingSpeedMHz: hw.ProcessorSpeedMhz.Int(),
+		})
+	}
+	return out
 }
 
 func parseEmbeddedSubresources(hw *ServerHardware, exp *ServerExport) {
@@ -414,14 +446,14 @@ func decodeSubData[T any](raw json.RawMessage, exp *ServerExport, name string) [
 		return nil
 	}
 	var list JSONList[T]
-	if err := json.Unmarshal(raw, &list); err == nil && len(list) > 0 {
+	if err := DecodeJSON(raw, &list); err == nil && len(list) > 0 {
 		return list
 	}
 	var wrap struct {
 		Data    JSONList[T] `json:"data"`
 		Members JSONList[T] `json:"members"`
 	}
-	if err := json.Unmarshal(raw, &wrap); err == nil {
+	if err := DecodeJSON(raw, &wrap); err == nil {
 		if len(wrap.Data) > 0 {
 			return wrap.Data
 		}
@@ -440,11 +472,11 @@ func applyLocalStorage(exp *ServerExport, ctrls []rawController, source string) 
 		return
 	}
 	exp.Storage.Source = source
-	exp.Storage.Controllers = nil
-	exp.Storage.Drives = nil
-	exp.Storage.Volumes = nil
+	exp.Storage.Controllers = []StorageController{}
+	exp.Storage.Drives = []PhysicalDrive{}
+	exp.Storage.Volumes = []LogicalDrive{}
 	for _, c := range ctrls {
-		exp.Storage.Controllers = append(exp.Storage.Controllers, StorageController{
+		ctrl := StorageController{
 			Name:                 c.Name,
 			Model:                c.Model,
 			SerialNumber:         c.SerialNumber,
@@ -455,9 +487,11 @@ func applyLocalStorage(exp *ServerExport, ctrls []rawController, source string) 
 			CacheMemorySizeMiB:   c.CacheMemorySizeMiB,
 			Health:               c.Status.Health,
 			State:                c.Status.State,
-		})
+			Drives:               []PhysicalDrive{},
+			Volumes:              []LogicalDrive{},
+		}
 		for _, d := range c.PhysicalDrives {
-			exp.Storage.Drives = append(exp.Storage.Drives, PhysicalDrive{
+			drive := PhysicalDrive{
 				Location:        d.Location,
 				Model:           d.Model,
 				SerialNumber:    d.SerialNumber,
@@ -470,10 +504,12 @@ func applyLocalStorage(exp *ServerExport, ctrls []rawController, source string) 
 				Health:          d.Status.Health,
 				State:           d.Status.State,
 				Encrypted:       d.EncryptedDrive,
-			})
+			}
+			ctrl.Drives = append(ctrl.Drives, drive)
+			exp.Storage.Drives = append(exp.Storage.Drives, drive)
 		}
 		for _, v := range c.LogicalDrives {
-			exp.Storage.Volumes = append(exp.Storage.Volumes, LogicalDrive{
+			vol := LogicalDrive{
 				Name:           v.LogicalDriveName,
 				Number:         v.LogicalDriveNumber,
 				RAID:           fmt.Sprint(v.RAID),
@@ -484,8 +520,11 @@ func applyLocalStorage(exp *ServerExport, ctrls []rawController, source string) 
 				State:          v.Status.State,
 				VolumeUniqueID: v.VolumeUniqueIdentifier,
 				Acceleration:   v.AccelerationMethod,
-			})
+			}
+			ctrl.Volumes = append(ctrl.Volumes, vol)
+			exp.Storage.Volumes = append(exp.Storage.Volumes, vol)
 		}
+		exp.Storage.Controllers = append(exp.Storage.Controllers, ctrl)
 	}
 }
 
@@ -558,7 +597,7 @@ func networkPortsFrom(pm PortMap) []NetworkPortExport {
 			row := NetworkPortExport{
 				DeviceName:   slot.DeviceName,
 				DeviceSlot:   slot.Location,
-				PortNumber:   p.PortNumber,
+				PortNumber:   p.PortNumber.Int(),
 				Type:         p.Type,
 				MAC:          p.MAC,
 				WWN:          p.WWN,

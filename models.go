@@ -80,34 +80,34 @@ type ResourceAlert struct {
 	ClearedTime          string             `json:"clearedTime,omitempty"`
 	CorrectiveAction     string             `json:"correctiveAction,omitempty"`
 	Description          string             `json:"description,omitempty"`
-	LifeCycle            bool               `json:"lifeCycle,omitempty"`
+	LifeCycle            FlexBool           `json:"lifeCycle,omitempty"`
 	PhysicalResourceType string             `json:"physicalResourceType,omitempty"`
 	ResourceID           string             `json:"resourceID,omitempty"`
 	ResourceURI          string             `json:"resourceUri,omitempty"`
 	Severity             string             `json:"severity,omitempty"`
-	ServiceEvent         bool               `json:"serviceEvent,omitempty"`
-	ServiceEventSource   bool               `json:"serviceEventSource,omitempty"`
+	ServiceEvent         FlexBool           `json:"serviceEvent,omitempty"`
+	ServiceEventSource   FlexBool           `json:"serviceEventSource,omitempty"`
 	Urgency              string             `json:"urgency,omitempty"`
 }
 
 // ChangeLogEntry is an alert history line.
 type ChangeLogEntry struct {
-	UserName       string `json:"username,omitempty"`
-	OnlyForUser    bool   `json:"onlyForUser,omitempty"`
-	Notes          string `json:"notes,omitempty"`
-	Timestamp      string `json:"timestamp,omitempty"`
-	AlertState     string `json:"alertState,omitempty"`
-	AssignedToUser string `json:"assignedToUser,omitempty"`
+	UserName       string   `json:"username,omitempty"`
+	OnlyForUser    FlexBool `json:"onlyForUser,omitempty"`
+	Notes          string   `json:"notes,omitempty"`
+	Timestamp      string   `json:"timestamp,omitempty"`
+	AlertState     string   `json:"alertState,omitempty"`
+	AssignedToUser string   `json:"assignedToUser,omitempty"`
 }
 
 // AlertSettings is GET/PUT /rest/admin-settings/alert-settings.
 type AlertSettings struct {
 	Resource
 	EmailFilterCategories []string `json:"emailFilterCategories,omitempty"`
-	EmailFilterEnabled    bool     `json:"emailFilterEnabled,omitempty"`
-	Enabled               bool     `json:"enabled,omitempty"`
+	EmailFilterEnabled    FlexBool `json:"emailFilterEnabled,omitempty"`
+	Enabled               FlexBool `json:"enabled,omitempty"`
 	Password              string   `json:"password,omitempty"`
-	Port                  int      `json:"port,omitempty"`
+	Port                  FlexInt  `json:"port,omitempty"`
 	SenderEmailAddress    string   `json:"senderEmailAddress,omitempty"`
 	SMTPServer            string   `json:"smtpServer,omitempty"`
 	Username              string   `json:"username,omitempty"`
@@ -119,7 +119,7 @@ type Appliance struct {
 	Resource
 	Address           string         `json:"address,omitempty"`
 	ApplianceURI      string         `json:"applianceUri,omitempty"`
-	CurrentAPIVersion int            `json:"currentApiVersion,omitempty"`
+	CurrentAPIVersion FlexInt        `json:"currentApiVersion,omitempty"`
 	Hostname          string         `json:"hostname,omitempty"`
 	LoginDomain       string         `json:"loginDomain,omitempty"`
 	Model             string         `json:"model,omitempty"`
@@ -130,7 +130,7 @@ type Appliance struct {
 	ServerCert        map[string]any `json:"serverCert,omitempty"`
 	Username          string         `json:"username,omitempty"`
 	Version           string         `json:"version,omitempty"`
-	ForceTrusted      bool           `json:"forceTrusted,omitempty"`
+	ForceTrusted      FlexBool       `json:"forceTrusted,omitempty"`
 }
 
 // ApplianceAdd is POST /rest/appliances.
@@ -147,10 +147,10 @@ type ApplianceAdd struct {
 // AuditLogSettings is GET/PUT /rest/audit-logs/settings.
 type AuditLogSettings struct {
 	Resource
-	Enabled  bool   `json:"enabled,omitempty"`
-	Facility string `json:"facility,omitempty"`
-	Host     string `json:"host,omitempty"`
-	Port     int    `json:"port,omitempty"`
+	Enabled  FlexBool `json:"enabled,omitempty"`
+	Facility string   `json:"facility,omitempty"`
+	Host     string   `json:"host,omitempty"`
+	Port     FlexInt  `json:"port,omitempty"`
 }
 
 // ServerCertificate is POST /rest/certificates/servers.
@@ -174,9 +174,9 @@ type RemoteCertificate struct {
 // Group is Global Dashboard /rest/groups.
 type Group struct {
 	Resource
-	ParentName     string `json:"parentName,omitempty"`
-	ParentURI      string `json:"parentUri,omitempty"`
-	ResourceNumber int    `json:"resourceNumber,omitempty"`
+	ParentName     string  `json:"parentName,omitempty"`
+	ParentURI      string  `json:"parentUri,omitempty"`
+	ResourceNumber FlexInt `json:"resourceNumber,omitempty"`
 }
 
 // GroupCreate is POST /rest/groups.
@@ -190,23 +190,23 @@ type Enclosure struct {
 	Resource
 	ActiveOAPreferredIP  string           `json:"activeOaPreferredIP,omitempty"`
 	AssetTag             string           `json:"assetTag,omitempty"`
-	DeviceBayCount       int              `json:"deviceBayCount,omitempty"`
+	DeviceBayCount       FlexInt          `json:"deviceBayCount,omitempty"`
 	DeviceBays           []map[string]any `json:"deviceBays,omitempty"`
 	EnclosureGroupURI    string           `json:"enclosureGroupUri,omitempty"`
 	EnclosureType        string           `json:"enclosureType,omitempty"`
-	FanBayCount          int              `json:"fanBayCount,omitempty"`
+	FanBayCount          FlexInt          `json:"fanBayCount,omitempty"`
 	FanBays              []map[string]any `json:"fanBays,omitempty"`
 	FwBaselineName       string           `json:"fwBaselineName,omitempty"`
 	FwBaselineURI        string           `json:"fwBaselineUri,omitempty"`
-	InterconnectBayCount int              `json:"interconnectBayCount,omitempty"`
+	InterconnectBayCount FlexInt          `json:"interconnectBayCount,omitempty"`
 	InterconnectBays     []map[string]any `json:"interconnectBays,omitempty"`
-	IsFwManaged          bool             `json:"isFwManaged,omitempty"`
+	IsFwManaged          FlexBool         `json:"isFwManaged,omitempty"`
 	LicensingIntent      string           `json:"licensingIntent,omitempty"`
 	LogicalEnclosureURI  string           `json:"logicalEnclosureUri,omitempty"`
 	ManagerBays          []map[string]any `json:"managerBays,omitempty"`
 	OABays               []map[string]any `json:"oaBays,omitempty"`
 	PartNumber           string           `json:"partNumber,omitempty"`
-	PowerSupplyBayCount  int              `json:"powerSupplyBayCount,omitempty"`
+	PowerSupplyBayCount  FlexInt          `json:"powerSupplyBayCount,omitempty"`
 	PowerSupplyBays      []map[string]any `json:"powerSupplyBays,omitempty"`
 	RackName             string           `json:"rackName,omitempty"`
 	RefreshState         string           `json:"refreshState,omitempty"`
@@ -218,53 +218,64 @@ type Enclosure struct {
 }
 
 // ServerHardware is GET /rest/server-hardware/{id}.
+//
+// Scalar types follow both swagger 300 (Global Dashboard) and appliance
+// 3800–8800: powerLock is a bool on the appliance but a string in the GD
+// schema; hostOsType is an integer, null, or OS name; position/memory/CPU
+// counts are integers that are null on rack servers and incomplete inventory.
 type ServerHardware struct {
 	Resource
-	AssetTag                   string                         `json:"assetTag,omitempty"`
-	FormFactor                 string                         `json:"formFactor,omitempty"`
-	HostOsType                 FlexInt                        `json:"hostOsType,omitempty"`
-	LicensingIntent            string                         `json:"licensingIntent,omitempty"`
-	LocationURI                string                         `json:"locationUri,omitempty"`
-	MaintenanceMode            bool                           `json:"maintenanceMode,omitempty"`
-	MemoryMb                   int                            `json:"memoryMb,omitempty"`
-	Model                      string                         `json:"model,omitempty"`
-	MpDnsName                  string                         `json:"mpDnsName,omitempty"`
-	MpFirmwareVersion          string                         `json:"mpFirmwareVersion,omitempty"`
-	MpHostInfo                 MpHostInfo                     `json:"mpHostInfo,omitempty"`
-	MpIpAddress                string                         `json:"mpIpAddress,omitempty"`
-	MpLicenseType              string                         `json:"mpLicenseType,omitempty"`
-	MpModel                    string                         `json:"mpModel,omitempty"`
-	MpState                    string                         `json:"mpState,omitempty"`
-	OperatingSystem            string                         `json:"operatingSystem,omitempty"`
-	PartNumber                 string                         `json:"partNumber,omitempty"`
-	PhysicalServerHardwareURI  string                         `json:"physicalServerHardwareUri,omitempty"`
-	Platform                   string                         `json:"platform,omitempty"`
-	PortMap                    PortMap                        `json:"portMap,omitempty"`
-	SubResources               map[string]HardwareSubResource `json:"subResources,omitempty"`
-	Position                   int                            `json:"position,omitempty"`
-	PowerLock                  FlexBool                       `json:"powerLock,omitempty"`
-	PowerState                 string                         `json:"powerState,omitempty"`
-	ProcessorCoreCount         int                            `json:"processorCoreCount,omitempty"`
-	ProcessorCount             int                            `json:"processorCount,omitempty"`
-	ProcessorSpeedMhz          int                            `json:"processorSpeedMhz,omitempty"`
-	ProcessorType              string                         `json:"processorType,omitempty"`
-	RefreshState               string                         `json:"refreshState,omitempty"`
-	RemoteSupportSettings      map[string]any                 `json:"remoteSupportSettings,omitempty"`
-	RomVersion                 string                         `json:"romVersion,omitempty"`
-	SerialNumber               string                         `json:"serialNumber,omitempty"`
-	ServerGroupURI             string                         `json:"serverGroupUri,omitempty"`
-	ServerHardwareTypeName     string                         `json:"serverHardwareTypeName,omitempty"`
-	ServerHardwareTypeURI      string                         `json:"serverHardwareTypeUri,omitempty"`
-	ServerName                 string                         `json:"serverName,omitempty"`
-	ServerProfileURI           string                         `json:"serverProfileUri,omitempty"`
-	ShortModel                 string                         `json:"shortModel,omitempty"`
-	SupportDataCollectionState string                         `json:"supportDataCollectionState,omitempty"`
-	SupportDataCollectionType  string                         `json:"supportDataCollectionType,omitempty"`
-	SupportState               string                         `json:"supportState,omitempty"`
-	UIDState                   string                         `json:"uidState,omitempty"`
-	UUID                       string                         `json:"uuid,omitempty"`
-	VirtualSerialNumber        string                         `json:"virtualSerialNumber,omitempty"`
-	VirtualUUID                string                         `json:"virtualUuid,omitempty"`
+	AssetTag                       string                         `json:"assetTag,omitempty"`
+	ConfigurationState             string                         `json:"configurationState,omitempty"`
+	FormFactor                     string                         `json:"formFactor,omitempty"`
+	Generation                     string                         `json:"generation,omitempty"`
+	Hostname                       string                         `json:"hostname,omitempty"`
+	HostOsType                     FlexString                     `json:"hostOsType,omitempty"`
+	IntelligentProvisioningVersion string                         `json:"intelligentProvisioningVersion,omitempty"`
+	LicensingIntent                string                         `json:"licensingIntent,omitempty"`
+	LocationURI                    string                         `json:"locationUri,omitempty"`
+	MaintenanceMode                FlexBool                       `json:"maintenanceMode,omitempty"`
+	MemoryMb                       FlexInt                        `json:"memoryMb,omitempty"`
+	Model                          string                         `json:"model,omitempty"`
+	MpDnsName                      string                         `json:"mpDnsName,omitempty"`
+	MpFirmwareVersion              string                         `json:"mpFirmwareVersion,omitempty"`
+	MpHostInfo                     MpHostInfo                     `json:"mpHostInfo,omitempty"`
+	MpHostsAndRanges               []string                       `json:"mpHostsAndRanges,omitempty"`
+	MpIpAddress                    string                         `json:"mpIpAddress,omitempty"`
+	MpLicenseType                  string                         `json:"mpLicenseType,omitempty"`
+	MpModel                        string                         `json:"mpModel,omitempty"`
+	MpState                        string                         `json:"mpState,omitempty"`
+	OneTimeBoot                    string                         `json:"oneTimeBoot,omitempty"`
+	OperatingSystem                string                         `json:"operatingSystem,omitempty"`
+	PartNumber                     string                         `json:"partNumber,omitempty"`
+	PhysicalServerHardwareURI      string                         `json:"physicalServerHardwareUri,omitempty"`
+	Platform                       string                         `json:"platform,omitempty"`
+	PortMap                        PortMap                        `json:"portMap,omitempty"`
+	SubResources                   map[string]HardwareSubResource `json:"subResources,omitempty"`
+	Position                       FlexInt                        `json:"position,omitempty"`
+	PowerLock                      FlexBool                       `json:"powerLock,omitempty"`
+	PowerState                     string                         `json:"powerState,omitempty"`
+	ProcessorCoreCount             FlexInt                        `json:"processorCoreCount,omitempty"`
+	ProcessorCount                 FlexInt                        `json:"processorCount,omitempty"`
+	ProcessorSpeedMhz              FlexInt                        `json:"processorSpeedMhz,omitempty"`
+	ProcessorType                  string                         `json:"processorType,omitempty"`
+	RefreshState                   string                         `json:"refreshState,omitempty"`
+	RemoteSupportSettings          map[string]any                 `json:"remoteSupportSettings,omitempty"`
+	RomVersion                     string                         `json:"romVersion,omitempty"`
+	SerialNumber                   string                         `json:"serialNumber,omitempty"`
+	ServerGroupURI                 string                         `json:"serverGroupUri,omitempty"`
+	ServerHardwareTypeName         string                         `json:"serverHardwareTypeName,omitempty"`
+	ServerHardwareTypeURI          string                         `json:"serverHardwareTypeUri,omitempty"`
+	ServerName                     string                         `json:"serverName,omitempty"`
+	ServerProfileURI               string                         `json:"serverProfileUri,omitempty"`
+	ShortModel                     string                         `json:"shortModel,omitempty"`
+	SupportDataCollectionState     string                         `json:"supportDataCollectionState,omitempty"`
+	SupportDataCollectionType      string                         `json:"supportDataCollectionType,omitempty"`
+	SupportState                   string                         `json:"supportState,omitempty"`
+	UIDState                       string                         `json:"uidState,omitempty"`
+	UUID                           string                         `json:"uuid,omitempty"`
+	VirtualSerialNumber            string                         `json:"virtualSerialNumber,omitempty"`
+	VirtualUUID                    string                         `json:"virtualUuid,omitempty"`
 }
 
 // HardwareSubResource is one iLO inventory collection on GET /rest/server-hardware/{id}
@@ -274,7 +285,7 @@ type HardwareSubResource struct {
 	CollectionState string          `json:"collectionState,omitempty"`
 	Modified        string          `json:"modified,omitempty"`
 	Name            string          `json:"name,omitempty"`
-	Count           int             `json:"count,omitempty"`
+	Count           FlexInt         `json:"count,omitempty"`
 	ETag            FlexString      `json:"etag,omitempty"`
 	Data            json.RawMessage `json:"data,omitempty"`
 }
@@ -287,20 +298,20 @@ type PortMap struct {
 // DeviceSlot is one adapter location (LOM, Mezz, PCI, …).
 type DeviceSlot struct {
 	DeviceName    string         `json:"deviceName,omitempty"`
-	DeviceNumber  int            `json:"deviceNumber,omitempty"`
+	DeviceNumber  FlexInt        `json:"deviceNumber,omitempty"`
 	Location      string         `json:"location,omitempty"`
-	SlotNumber    int            `json:"slotNumber,omitempty"`
+	SlotNumber    FlexInt        `json:"slotNumber,omitempty"`
 	PhysicalPorts []PhysicalPort `json:"physicalPorts,omitempty"`
 }
 
 // PhysicalPort is a NIC/HBA port on an adapter.
 type PhysicalPort struct {
-	InterconnectPort         int           `json:"interconnectPort,omitempty"`
+	InterconnectPort         FlexInt       `json:"interconnectPort,omitempty"`
 	InterconnectURI          string        `json:"interconnectUri,omitempty"`
 	MAC                      string        `json:"mac,omitempty"`
-	PhysicalInterconnectPort int           `json:"physicalInterconnectPort,omitempty"`
+	PhysicalInterconnectPort FlexInt       `json:"physicalInterconnectPort,omitempty"`
 	PhysicalInterconnectURI  string        `json:"physicalInterconnectUri,omitempty"`
-	PortNumber               int           `json:"portNumber,omitempty"`
+	PortNumber               FlexInt       `json:"portNumber,omitempty"`
 	Type                     string        `json:"type,omitempty"`
 	WWN                      string        `json:"wwn,omitempty"`
 	VirtualPorts             []VirtualPort `json:"virtualPorts,omitempty"`
@@ -308,12 +319,12 @@ type PhysicalPort struct {
 
 // VirtualPort is a FlexNIC on a physical adapter port.
 type VirtualPort struct {
-	CurrentAllocatedVirtualFunctionCount int    `json:"currentAllocatedVirtualFunctionCount,omitempty"`
-	MAC                                  string `json:"mac,omitempty"`
-	PortFunction                         string `json:"portFunction,omitempty"`
-	PortNumber                           int    `json:"portNumber,omitempty"`
-	WWNN                                 string `json:"wwnn,omitempty"`
-	WWPN                                 string `json:"wwpn,omitempty"`
+	CurrentAllocatedVirtualFunctionCount FlexInt `json:"currentAllocatedVirtualFunctionCount,omitempty"`
+	MAC                                  string  `json:"mac,omitempty"`
+	PortFunction                         string  `json:"portFunction,omitempty"`
+	PortNumber                           FlexInt `json:"portNumber,omitempty"`
+	WWNN                                 string  `json:"wwnn,omitempty"`
+	WWPN                                 string  `json:"wwpn,omitempty"`
 }
 
 // MpHostInfo is iLO hostname / IP information.
@@ -344,33 +355,42 @@ type SSOURL struct {
 // ServerProfile is GET /rest/server-profiles/{id}.
 type ServerProfile struct {
 	Resource
-	Affinity                 string           `json:"affinity,omitempty"`
-	AssociatedServer         string           `json:"associatedServer,omitempty"`
-	Bios                     map[string]any   `json:"bios,omitempty"`
-	Boot                     map[string]any   `json:"boot,omitempty"`
-	BootMode                 map[string]any   `json:"bootMode,omitempty"`
-	ConnectionSettings       map[string]any   `json:"connectionSettings,omitempty"`
-	Connections              []map[string]any `json:"connections,omitempty"`
-	EnclosureBay             int              `json:"enclosureBay,omitempty"`
-	EnclosureGroupURI        string           `json:"enclosureGroupUri,omitempty"`
-	EnclosureURI             string           `json:"enclosureUri,omitempty"`
-	Firmware                 map[string]any   `json:"firmware,omitempty"`
-	HideUnusedFlexNics       bool             `json:"hideUnusedFlexNics,omitempty"`
-	IscsiInitiatorName       string           `json:"iscsiInitiatorName,omitempty"`
-	IscsiInitiatorNameType   string           `json:"iscsiInitiatorNameType,omitempty"`
-	LocalStorage             map[string]any   `json:"localStorage,omitempty"`
-	MacType                  string           `json:"macType,omitempty"`
-	ProfileName              string           `json:"profileName,omitempty"`
-	RefreshState             string           `json:"refreshState,omitempty"`
-	SanStorage               map[string]any   `json:"sanStorage,omitempty"`
-	SerialNumber             string           `json:"serialNumber,omitempty"`
-	SerialNumberType         string           `json:"serialNumberType,omitempty"`
-	ServerHardwareTypeURI    string           `json:"serverHardwareTypeUri,omitempty"`
-	ServerHardwareURI        string           `json:"serverHardwareUri,omitempty"`
-	ServerProfileTemplateURI string           `json:"serverProfileTemplateUri,omitempty"`
-	TemplateCompliance       string           `json:"templateCompliance,omitempty"`
-	UUID                     string           `json:"uuid,omitempty"`
-	WwnType                  string           `json:"wwnType,omitempty"`
+	Affinity                   string           `json:"affinity,omitempty"`
+	AssociatedServer           string           `json:"associatedServer,omitempty"`
+	Bios                       map[string]any   `json:"bios,omitempty"`
+	Boot                       map[string]any   `json:"boot,omitempty"`
+	BootMode                   map[string]any   `json:"bootMode,omitempty"`
+	ConnectionSettings         map[string]any   `json:"connectionSettings,omitempty"`
+	Connections                []map[string]any `json:"connections,omitempty"`
+	EnclosureBay               FlexInt          `json:"enclosureBay,omitempty"`
+	EnclosureGroupURI          string           `json:"enclosureGroupUri,omitempty"`
+	EnclosureURI               string           `json:"enclosureUri,omitempty"`
+	Firmware                   map[string]any   `json:"firmware,omitempty"`
+	HideUnusedFlexNics         FlexBool         `json:"hideUnusedFlexNics,omitempty"`
+	HostNVMeQualifiedName      string           `json:"hostNVMeQualifiedName,omitempty"`
+	HostNVMeQualifiedNameType  string           `json:"hostNVMeQualifiedNameType,omitempty"`
+	InProgress                 FlexBool         `json:"inProgress,omitempty"`
+	IscsiInitiatorName         string           `json:"iscsiInitiatorName,omitempty"`
+	IscsiInitiatorNameType     string           `json:"iscsiInitiatorNameType,omitempty"`
+	LocalStorage               map[string]any   `json:"localStorage,omitempty"`
+	MacType                    string           `json:"macType,omitempty"`
+	ManagementProcessor        map[string]any   `json:"managementProcessor,omitempty"`
+	OSDeploymentSettings       map[string]any   `json:"osDeploymentSettings,omitempty"`
+	ProfileName                string           `json:"profileName,omitempty"`
+	ProfileUUID                string           `json:"profileUUID,omitempty"`
+	RefreshState               string           `json:"refreshState,omitempty"`
+	SanStorage                 map[string]any   `json:"sanStorage,omitempty"`
+	SerialNumber               string           `json:"serialNumber,omitempty"`
+	SerialNumberType           string           `json:"serialNumberType,omitempty"`
+	ServerHardwareReapplyState string           `json:"serverHardwareReapplyState,omitempty"`
+	ServerHardwareTypeURI      string           `json:"serverHardwareTypeUri,omitempty"`
+	ServerHardwareURI          string           `json:"serverHardwareUri,omitempty"`
+	ServerProfileTemplateURI   string           `json:"serverProfileTemplateUri,omitempty"`
+	ServiceManager             string           `json:"serviceManager,omitempty"`
+	TaskURI                    string           `json:"taskUri,omitempty"`
+	TemplateCompliance         string           `json:"templateCompliance,omitempty"`
+	UUID                       string           `json:"uuid,omitempty"`
+	WwnType                    string           `json:"wwnType,omitempty"`
 }
 
 // ServerProfileTemplate is GET /rest/server-profile-templates/{id}.
@@ -384,7 +404,7 @@ type ServerProfileTemplate struct {
 	Connections           []map[string]any `json:"connections,omitempty"`
 	EnclosureGroupURI     string           `json:"enclosureGroupUri,omitempty"`
 	Firmware              map[string]any   `json:"firmware,omitempty"`
-	HideUnusedFlexNics    bool             `json:"hideUnusedFlexNics,omitempty"`
+	HideUnusedFlexNics    FlexBool         `json:"hideUnusedFlexNics,omitempty"`
 	LocalStorage          map[string]any   `json:"localStorage,omitempty"`
 	MacType               string           `json:"macType,omitempty"`
 	SanStorage            map[string]any   `json:"sanStorage,omitempty"`
@@ -431,11 +451,11 @@ type LogicalInterconnect struct {
 // DriveEnclosure is GET /rest/drive-enclosures/{id}.
 type DriveEnclosure struct {
 	Resource
-	BayNumber      int              `json:"bayNumber,omitempty"`
+	BayNumber      FlexInt          `json:"bayNumber,omitempty"`
 	DeviceBays     []map[string]any `json:"deviceBays,omitempty"`
 	DriveBays      []map[string]any `json:"driveBays,omitempty"`
 	EnclosureURI   string           `json:"enclosureUri,omitempty"`
-	IOAdapterCount int              `json:"ioAdapterCount,omitempty"`
+	IOAdapterCount FlexInt          `json:"ioAdapterCount,omitempty"`
 	Model          string           `json:"model,omitempty"`
 	ProductName    string           `json:"productName,omitempty"`
 	SerialNumber   string           `json:"serialNumber,omitempty"`
@@ -446,13 +466,13 @@ type DriveEnclosure struct {
 type Datacenter struct {
 	Resource
 	Contents                []map[string]any `json:"contents,omitempty"`
-	CoolingCapacity         int              `json:"coolingCapacity,omitempty"`
+	CoolingCapacity         FlexInt          `json:"coolingCapacity,omitempty"`
 	CostPerWatt             float64          `json:"costPerWatt,omitempty"`
 	Currency                string           `json:"currency,omitempty"`
-	DefaultPowerLineVoltage int              `json:"defaultPowerLineVoltage,omitempty"`
+	DefaultPowerLineVoltage FlexInt          `json:"defaultPowerLineVoltage,omitempty"`
 	DeratingType            string           `json:"deratingType,omitempty"`
-	Height                  int              `json:"height,omitempty"`
-	Width                   int              `json:"width,omitempty"`
+	Height                  FlexInt          `json:"height,omitempty"`
+	Width                   FlexInt          `json:"width,omitempty"`
 }
 
 // ConvergedSystem is GET /rest/converged-systems/{id}.
@@ -471,7 +491,7 @@ type ManagedSAN struct {
 	Resource
 	DeviceAliases map[string]any `json:"deviceAliases,omitempty"`
 	FabricURI     string         `json:"fabricUri,omitempty"`
-	IsExpected    bool           `json:"isExpected,omitempty"`
+	IsExpected    FlexBool       `json:"isExpected,omitempty"`
 	PrincipalWWN  string         `json:"principalSwitchWwn,omitempty"`
 	SanPolicy     map[string]any `json:"sanPolicy,omitempty"`
 	WWN           string         `json:"wwn,omitempty"`
@@ -482,7 +502,7 @@ type SANManager struct {
 	Resource
 	DeviceID                 string         `json:"deviceId,omitempty"`
 	DeviceSpecificAttributes map[string]any `json:"deviceSpecificAttributes,omitempty"`
-	IsInternal               bool           `json:"isInternal,omitempty"`
+	IsInternal               FlexBool       `json:"isInternal,omitempty"`
 	ProviderDisplayName      string         `json:"providerDisplayName,omitempty"`
 	ProviderURI              string         `json:"providerUri,omitempty"`
 }
@@ -509,7 +529,7 @@ type StoragePool struct {
 	AllocatedCapacity        string         `json:"allocatedCapacity,omitempty"`
 	DeviceSpecificAttributes map[string]any `json:"deviceSpecificAttributes,omitempty"`
 	FreeCapacity             string         `json:"freeCapacity,omitempty"`
-	IsManaged                bool           `json:"isManaged,omitempty"`
+	IsManaged                FlexBool       `json:"isManaged,omitempty"`
 	StorageSystemURI         string         `json:"storageSystemUri,omitempty"`
 	TotalCapacity            string         `json:"totalCapacity,omitempty"`
 }
@@ -520,12 +540,12 @@ type StorageVolume struct {
 	AllocatedCapacity        string         `json:"allocatedCapacity,omitempty"`
 	DeviceSpecificAttributes map[string]any `json:"deviceSpecificAttributes,omitempty"`
 	DeviceVolumeName         string         `json:"deviceVolumeName,omitempty"`
-	IsPermanent              bool           `json:"isPermanent,omitempty"`
-	IsShareable              bool           `json:"isShareable,omitempty"`
+	IsPermanent              FlexBool       `json:"isPermanent,omitempty"`
+	IsShareable              FlexBool       `json:"isShareable,omitempty"`
 	ProvisionType            string         `json:"provisionType,omitempty"`
 	ProvisionedCapacity      string         `json:"provisionedCapacity,omitempty"`
 	RaidLevel                string         `json:"raidLevel,omitempty"`
-	Shareable                bool           `json:"shareable,omitempty"`
+	Shareable                FlexBool       `json:"shareable,omitempty"`
 	StoragePoolURI           string         `json:"storagePoolUri,omitempty"`
 	StorageSystemURI         string         `json:"storageSystemUri,omitempty"`
 	VolumeTemplateURI        string         `json:"volumeTemplateUri,omitempty"`
@@ -566,23 +586,23 @@ type NetworkInterfaces struct {
 // EthernetNetwork is GET /rest/ethernet-networks/{id} (appliance 3800–8800).
 type EthernetNetwork struct {
 	Resource
-	VlanId                int    `json:"vlanId,omitempty"`
-	EthernetNetworkType   string `json:"ethernetNetworkType,omitempty"`
-	Purpose               string `json:"purpose,omitempty"`
-	SmartLink             bool   `json:"smartLink,omitempty"`
-	PrivateNetwork        bool   `json:"privateNetwork,omitempty"`
-	ConnectionTemplateURI string `json:"connectionTemplateUri,omitempty"`
-	SubnetURI             string `json:"subnetUri,omitempty"`
+	VlanId                FlexInt  `json:"vlanId,omitempty"`
+	EthernetNetworkType   string   `json:"ethernetNetworkType,omitempty"`
+	Purpose               string   `json:"purpose,omitempty"`
+	SmartLink             FlexBool `json:"smartLink,omitempty"`
+	PrivateNetwork        FlexBool `json:"privateNetwork,omitempty"`
+	ConnectionTemplateURI string   `json:"connectionTemplateUri,omitempty"`
+	SubnetURI             string   `json:"subnetUri,omitempty"`
 }
 
 // FCNetwork is GET /rest/fc-networks/{id}.
 type FCNetwork struct {
 	Resource
-	FabricType              string `json:"fabricType,omitempty"`
-	LinkStabilityTime       int    `json:"linkStabilityTime,omitempty"`
-	AutoLoginRedistribution bool   `json:"autoLoginRedistribution,omitempty"`
-	ManagedSanURI           string `json:"managedSanUri,omitempty"`
-	ConnectionTemplateURI   string `json:"connectionTemplateUri,omitempty"`
+	FabricType              string   `json:"fabricType,omitempty"`
+	LinkStabilityTime       FlexInt  `json:"linkStabilityTime,omitempty"`
+	AutoLoginRedistribution FlexBool `json:"autoLoginRedistribution,omitempty"`
+	ManagedSanURI           string   `json:"managedSanUri,omitempty"`
+	ConnectionTemplateURI   string   `json:"connectionTemplateUri,omitempty"`
 }
 
 // NetworkSet is GET /rest/network-sets/{id}.
@@ -596,12 +616,12 @@ type NetworkSet struct {
 // EnclosureGroup is GET /rest/enclosure-groups/{id}.
 type EnclosureGroup struct {
 	Resource
-	EnclosureCount          int              `json:"enclosureCount,omitempty"`
+	EnclosureCount          FlexInt          `json:"enclosureCount,omitempty"`
 	InterconnectBayMappings []map[string]any `json:"interconnectBayMappings,omitempty"`
 	IpAddressingMode        string           `json:"ipAddressingMode,omitempty"`
 	Ipv6AddressingMode      string           `json:"ipv6AddressingMode,omitempty"`
 	PowerMode               string           `json:"powerMode,omitempty"`
-	PortMappingCount        int              `json:"portMappingCount,omitempty"`
+	PortMappingCount        FlexInt          `json:"portMappingCount,omitempty"`
 	StackingMode            string           `json:"stackingMode,omitempty"`
 	OsDeploymentSettings    map[string]any   `json:"osDeploymentSettings,omitempty"`
 }
@@ -609,7 +629,7 @@ type EnclosureGroup struct {
 // LogicalEnclosure is GET /rest/logical-enclosures/{id}.
 type LogicalEnclosure struct {
 	Resource
-	DeleteFailed              bool           `json:"deleteFailed,omitempty"`
+	DeleteFailed              FlexBool       `json:"deleteFailed,omitempty"`
 	DeploymentManagerSettings map[string]any `json:"deploymentManagerSettings,omitempty"`
 	EnclosureGroupURI         string         `json:"enclosureGroupUri,omitempty"`
 	EnclosureURIs             []string       `json:"enclosureUris,omitempty"`
@@ -653,7 +673,7 @@ type UplinkSet struct {
 type FirmwareDriver struct {
 	Resource
 	BaselineShortName  string           `json:"baselineShortName,omitempty"`
-	BundleSize         int              `json:"bundleSize,omitempty"`
+	BundleSize         FlexInt          `json:"bundleSize,omitempty"`
 	BundleType         string           `json:"bundleType,omitempty"`
 	FwComponents       []map[string]any `json:"fwComponents,omitempty"`
 	Hotfixes           []map[string]any `json:"hotfixes,omitempty"`
