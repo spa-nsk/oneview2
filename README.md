@@ -125,6 +125,8 @@ go run ./examples/export_servers ./out
 
 Если `APIVersion` не задан, берётся `currentVersion` appliance.
 
+JSON от Global Dashboard (API 300) и appliance (3800–8800) расходится по типам: `eTag` — строка или число, `powerLock` — bool или строка, `hostOsType` — int / `null` / имя ОС, `position` и счётчики CPU/RAM — int или `null` на rack-серверах. Клиент приводит это к `FlexString` / `FlexInt` / `FlexBool` и через `DecodeJSON` принимает оба варианта.
+
 ## Что покрыто
 
 ### Из swagger 300.json (Global Dashboard)

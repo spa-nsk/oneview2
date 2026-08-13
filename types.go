@@ -26,6 +26,10 @@ func (s *FlexString) UnmarshalJSON(b []byte) error {
 		*s = FlexString(v)
 		return nil
 	}
+	if string(b) == "true" || string(b) == "false" {
+		*s = FlexString(b)
+		return nil
+	}
 	*s = FlexString(b)
 	return nil
 }
@@ -62,16 +66,26 @@ func (n *FlexInt) UnmarshalJSON(b []byte) error {
 		if err != nil {
 			f, err2 := strconv.ParseFloat(v, 64)
 			if err2 != nil {
-				return err
+				*n = 0
+				return nil
 			}
 			i = int(f)
 		}
 		*n = FlexInt(i)
 		return nil
 	}
+	if string(b) == "true" {
+		*n = 1
+		return nil
+	}
+	if string(b) == "false" {
+		*n = 0
+		return nil
+	}
 	var num json.Number
 	if err := json.Unmarshal(b, &num); err != nil {
-		return err
+		*n = 0
+		return nil
 	}
 	i, err := num.Int64()
 	if err != nil {
@@ -157,6 +171,9 @@ type Resource struct {
 	ApplianceURI      string     `json:"appluri,omitempty"`
 	OriginalURI       string     `json:"originalUri,omitempty"`
 	Groups            []GroupRef `json:"groups,omitempty"`
+	ScopesURI         string     `json:"scopesUri,omitempty"`
+	InitialScopeURIs  []string   `json:"initialScopeUris,omitempty"`
+	ScopeURIs         []string   `json:"scopeUris,omitempty"`
 }
 
 // GroupRef is a Global Dashboard group membership pointer.

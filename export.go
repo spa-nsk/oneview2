@@ -110,7 +110,7 @@ func (c *Client) exportHardware(ctx context.Context, listed *ServerHardware, opt
 		Identity:    identityFrom(hw),
 	}
 	exp.Processors = processorsFrom(hw, nil)
-	exp.Memory.TotalMiB = hw.MemoryMb
+	exp.Memory.TotalMiB = hw.MemoryMb.Int()
 	exp.NetworkPorts = networkPortsFrom(hw.PortMap)
 
 	if !opts.SkipSubresources {
@@ -329,7 +329,7 @@ func identityFrom(hw *ServerHardware) ServerIdentity {
 		MpFirmwareVersion:      hw.MpFirmwareVersion,
 		MpIPAddress:            hw.MpIpAddress,
 		MpHostName:             host,
-		Position:               hw.Position,
+		Position:               hw.Position.Int(),
 		LocationURI:            hw.LocationURI,
 		ServerProfileURI:       hw.ServerProfileURI,
 		ServerHardwareTypeURI:  hw.ServerHardwareTypeURI,
@@ -343,9 +343,9 @@ func first(vals ...string) string { return nonEmpty(vals...) }
 
 func processorsFrom(hw *ServerHardware, socks []rawProcessor) ProcessorInventory {
 	inv := ProcessorInventory{
-		Count:       hw.ProcessorCount,
-		CoresPerCPU: hw.ProcessorCoreCount,
-		SpeedMHz:    hw.ProcessorSpeedMhz,
+		Count:       hw.ProcessorCount.Int(),
+		CoresPerCPU: hw.ProcessorCoreCount.Int(),
+		SpeedMHz:    hw.ProcessorSpeedMhz.Int(),
 		Model:       hw.ProcessorType,
 	}
 	if inv.Count > 0 && inv.CoresPerCPU > 0 {
@@ -558,7 +558,7 @@ func networkPortsFrom(pm PortMap) []NetworkPortExport {
 			row := NetworkPortExport{
 				DeviceName:   slot.DeviceName,
 				DeviceSlot:   slot.Location,
-				PortNumber:   p.PortNumber,
+				PortNumber:   p.PortNumber.Int(),
 				Type:         p.Type,
 				MAC:          p.MAC,
 				WWN:          p.WWN,

@@ -121,7 +121,7 @@ func (c *Client) doJSON(ctx context.Context, method, path string, in, out any) (
 		return resp, err
 	}
 	if out != nil && len(resp.Body) > 0 && resp.StatusCode != http.StatusNoContent {
-		if err := json.Unmarshal(resp.Body, out); err != nil {
+		if err := decodeJSON(resp.Body, out); err != nil {
 			return resp, fmt.Errorf("oneview: decode %s %s: %w", method, path, err)
 		}
 	}
